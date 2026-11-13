@@ -1,0 +1,7 @@
+/target/
+/.playwriter-eval.js
+/dist/
+/web/crustacean.wasm
+/node_modules/
+.DS_Store
+Thumbs.db

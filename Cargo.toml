@@ -1,0 +1,14 @@
+[package]
+name = "crustacean"
+version = "0.1.0"
+edition = "2021"
+description = "A dependency-free Rust chess engine with browser and local GUIs, terminal play, and UCI analysis"
+
+[lib]
+crate-type = ["rlib", "cdylib"]
+
+[dependencies]
+
+[profile.release]
+debug = false
+strip = "debuginfo"
