@@ -1,5 +1,7 @@
 import { createTransport, browserEngine } from "./transport.js";
+import { createSoundPlayer, moveSounds } from "./sound.js";
 const $ = (id) => document.getElementById(id);
+const sound = createSoundPlayer($("sound-toggle"));
 const pieceNames = {
   p: "pawn",
   n: "knight",
@@ -254,6 +256,7 @@ function render(incoming) {
   if (!squares.size || !sameSession) buildBoard();
   renderBoard();
   animateMove(previous, incoming, sameSession);
+  sound.play(moveSounds(previous, incoming));
   renderFacts();
   if ($("status").textContent !== game.status)
     $("status").textContent = game.status;

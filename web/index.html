@@ -148,6 +148,22 @@
               <span aria-hidden="true">⇅</span> Flip board
             </button>
             <button id="board-pause" class="tool-button" disabled>Pause</button>
+            <button
+              id="sound-toggle"
+              class="tool-button sound-toggle"
+              aria-label="Sound effects"
+              aria-pressed="true"
+              title="Sound on · click to mute"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 9h4l5-4v14l-5-4H4z" />
+                <path
+                  class="sound-waves"
+                  d="M16 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"
+                />
+                <path class="sound-muted" d="m17 9 5 6m0-6-5 6" />
+              </svg>
+            </button>
           </div>
 
           <span class="board-hint" id="board-hint"

@@ -10,6 +10,7 @@ pause and step through moves, undo, load FEN positions, or export a PGN.
 The board shows legal moves, check, material balance and the last engine search.
 Desktop play fits the viewport; on phones, pause sits beside the board.
 Wins, losses and draws appear over the board, with an option to review the position.
+Quiet move and result sounds are on by default; the speaker button remembers your choice.
 Browser games live in the current tab and reset on reload, so export before leaving.
 
 ## Run locally

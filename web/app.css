@@ -429,6 +429,30 @@ svg {
 .tool-button:hover:not(:disabled) {
   color: #9e351d;
 }
+.sound-toggle {
+  min-width: 36px;
+  justify-content: center;
+  color: var(--rust);
+}
+.sound-toggle svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.sound-muted,
+.sound-toggle[aria-pressed="false"] .sound-waves {
+  display: none;
+}
+.sound-toggle[aria-pressed="false"] {
+  color: var(--muted);
+}
+.sound-toggle[aria-pressed="false"] .sound-muted {
+  display: block;
+}
 .board-hint {
   font-size: 10px;
   color: var(--muted);
@@ -1394,6 +1418,9 @@ dialog {
     width: 100%;
     justify-content: space-between;
     gap: 8px;
+  }
+  .sound-toggle {
+    min-width: 44px;
   }
   #board-pause {
     display: inline-flex;

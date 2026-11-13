@@ -231,6 +231,12 @@ fn handle(mut stream: TcpStream, shared: Shared, port: u16) -> io::Result<()> {
             "text/javascript; charset=utf-8",
             include_str!("../web/transport.js"),
         ),
+        ("GET", "/sound.js") => respond(
+            &mut stream,
+            200,
+            "text/javascript; charset=utf-8",
+            include_str!("../web/sound.js"),
+        ),
         ("GET", "/runtime.js") => respond(
             &mut stream,
             200,
