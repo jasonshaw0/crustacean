@@ -1,9 +1,18 @@
 # Crustacean
 
+[![Play online](https://img.shields.io/badge/Play-online-b44327)](https://jasonshaw0.github.io/crustacean/)
+[![Check and publish](https://github.com/jasonshaw0/crustacean/actions/workflows/pages.yml/badge.svg)](https://github.com/jasonshaw0/crustacean/actions/workflows/pages.yml)
+[![Rust 2021](https://img.shields.io/badge/Rust-2021-dea584?logo=rust&logoColor=white)](Cargo.toml)
+[![WebAssembly](https://img.shields.io/badge/WebAssembly-654ff0?logo=webassembly&logoColor=white)](src/wasm.rs)
+
 A small chess engine written in Rust. The name is Rust's crab meeting Stockfish;
 this is an independent engine, not a Stockfish port.
 
 **[Play in your browser](https://jasonshaw0.github.io/crustacean/)** — no account or install.
+
+[![Crustacean browser UI showing a paused engine-versus-engine game after 8...Qd6, with the chessboard, evaluation bar, move history, and resume and single-step controls.](docs/images/crustacean-ui.png)](docs/images/crustacean-ui.png)
+
+*A real engine-versus-engine game, paused after eight moves. Click the screenshot for full size.*
 
 Drag pieces or click to move. Play either color, watch the engine play itself,
 pause and step through moves, undo, load FEN positions, or export a PGN.
