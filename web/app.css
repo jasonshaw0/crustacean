@@ -748,13 +748,6 @@ textarea {
   min-height: 36px;
   padding: 8px;
 }
-.session-note {
-  font-size: 10px;
-  line-height: 1.6;
-  color: #6e6258;
-  text-align: center;
-  padding: 0 10px;
-}
 .toast {
   position: fixed;
   bottom: 24px;
@@ -1356,10 +1349,6 @@ dialog[open] {
   }
   .empty-board {
     font-size: 25px;
-  }
-  .session-note {
-    font-size: 10px;
-    padding: 0 4px;
   }
 }
 

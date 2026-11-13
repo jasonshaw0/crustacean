@@ -122,7 +122,7 @@ function connection(value) {
   connected = value;
   $("connection").textContent = value
     ? browserEngine
-      ? "Ready to play"
+      ? "WebAssembly"
       : "Connected"
     : "Disconnected";
   $("connection").className = `connection ${value ? "online" : "offline"}`;
@@ -901,9 +901,6 @@ try {
     },
     (error) => message(error.message, true),
   );
-  $("session-note").textContent = browserEngine
-    ? "No account. No install. This tab holds your game; export PGN before closing or reloading."
-    : "Your game stays here while the server is running.";
   await poll();
   if (!browserEngine) {
     // An idle board doesn't need the same polling rate as an active search.
