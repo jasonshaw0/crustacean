@@ -8,6 +8,8 @@ this is an independent engine, not a Stockfish port.
 Drag pieces or click to move. Play either color, watch the engine play itself,
 pause and step through moves, undo, load FEN positions, or export a PGN.
 The board shows legal moves, check, material balance and the last engine search.
+Desktop play fits the viewport; on phones, pause sits beside the board.
+Wins, losses and draws appear over the board, with an option to review the position.
 Browser games live in the current tab and reset on reload, so export before leaving.
 
 ## Run locally
@@ -40,7 +42,7 @@ With Rust and Node installed:
 ```sh
 rustup target add wasm32-unknown-unknown
 node scripts/build-web.mjs
-node --test tests/wasm.mjs
+node --test tests/*.mjs
 cargo test --release --locked
 ```
 
