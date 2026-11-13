@@ -250,6 +250,12 @@ function render(incoming) {
         ? "Start engines"
         : "Resume game";
   $("run").disabled = !connected || busy || game.finished;
+  $("board-pause").textContent = game.finished
+    ? "Game over"
+    : active
+      ? "Pause"
+      : "Resume";
+  $("board-pause").disabled = $("run").disabled;
   $("step").hidden = game.mode !== "engines";
   $("step").disabled = !connected || busy || active || game.finished;
   $("undo").disabled = !connected || busy || !game.moves.length;
@@ -442,6 +448,7 @@ function startDrag(event, from) {
     x: event.clientX,
     y: event.clientY,
     pointer: event.pointerId,
+    touch: event.pointerType === "touch",
     version: game.version,
     active: false,
     button: event.currentTarget,
@@ -462,7 +469,8 @@ $("board").addEventListener("pointermove", (event) => {
   if (!drag || event.pointerId !== drag.pointer) return;
   if (
     !drag.active &&
-    Math.hypot(event.clientX - drag.x, event.clientY - drag.y) < 5
+    Math.hypot(event.clientX - drag.x, event.clientY - drag.y) <
+      (drag.touch ? 8 : 5)
   )
     return;
   event.preventDefault();
@@ -479,7 +487,7 @@ $("board").addEventListener("pointermove", (event) => {
     document.body.append(drag.ghost);
   }
   drag.ghost.style.left = `${event.clientX}px`;
-  drag.ghost.style.top = `${event.clientY}px`;
+  drag.ghost.style.top = `${event.clientY - (drag.touch ? 22 : 0)}px`;
   const target = document
     .elementFromPoint(event.clientX, event.clientY)
     ?.closest("[data-square]");
@@ -525,6 +533,17 @@ window.addEventListener("blur", () => {
   cancelDrag();
   renderBoard();
 });
+window.addEventListener("resize", () => {
+  cancelDrag();
+  renderBoard();
+});
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
+    cancelDrag();
+    renderBoard();
+  }
+});
+$("board").addEventListener("contextmenu", (event) => event.preventDefault());
 
 async function poll() {
   if (!transport || polling || busy) return;
@@ -683,6 +702,9 @@ $("new-form").addEventListener("submit", async (event) => {
   }
 });
 $("run").addEventListener("click", () =>
+  action(game.running || game.thinking ? "pause" : "resume"),
+);
+$("board-pause").addEventListener("click", () =>
   action(game.running || game.thinking ? "pause" : "resume"),
 );
 $("step").addEventListener("click", () => action("step"));
