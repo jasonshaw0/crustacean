@@ -55,6 +55,8 @@ let transport;
 let drag = null;
 let suppressClick = false;
 let droppedMove = null;
+let resultKey = null;
+let resultDismissed = false;
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
 const squares = new Map();
 
@@ -318,7 +320,60 @@ function render(incoming) {
       }).format(a.nodes)
     : "—";
   $("pv").textContent = a?.pv || "The engine’s line will appear here.";
+  renderResult();
 }
+
+function renderResult() {
+  const key = game.finished
+    ? `${game.session}:${game.fen}:${game.result}`
+    : null;
+  const fresh = key !== resultKey;
+  if (fresh) {
+    resultKey = key;
+    resultDismissed = false;
+  }
+  const visible = !!key && !resultDismissed;
+  $("result-overlay").hidden = !visible;
+  $("show-result").hidden = !key || visible;
+  $("board").inert = visible;
+  if (!key) return;
+  const draw = game.result === "1/2-1/2";
+  const winner = game.result === "1-0" ? "white" : "black";
+  const won = winner === game.human;
+  $("result-title").textContent = draw
+    ? "It's a draw"
+    : game.mode === "engines"
+      ? `${title(winner)} wins`
+      : won
+        ? "You won!"
+        : "You lost";
+  $("result-detail").textContent = game.status + ".";
+  $("result-symbol").textContent = draw
+    ? "½ – ½"
+    : game.result.replaceAll("-", " – ");
+  $("result-overlay").dataset.outcome = draw ? "draw" : won ? "win" : "loss";
+  $("result-new").disabled = busy || !connected;
+  if (fresh && visible && !$("new-dialog").open)
+    $("result-title").focus({ preventScroll: true });
+}
+$("result-new").addEventListener("click", () => openSetup());
+function reviewBoard() {
+  resultDismissed = true;
+  renderResult();
+  squares.get(focusSquare)?.focus({ preventScroll: true });
+}
+$("result-review").addEventListener("click", reviewBoard);
+$("result-overlay").addEventListener("keydown", (event) => {
+  if (event.key === "Escape") {
+    event.preventDefault();
+    reviewBoard();
+  }
+});
+$("show-result").addEventListener("click", () => {
+  resultDismissed = false;
+  renderResult();
+  $("result-title").focus({ preventScroll: true });
+});
 function renderMoves() {
   const container = $("move-list");
   if (!game.moves.length) {

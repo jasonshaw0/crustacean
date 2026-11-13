@@ -60,6 +60,8 @@
       <section class="play-area" aria-label="Game board">
         <div class="live-strip" aria-live="polite">
           <span id="board-status">Getting ready…</span
+          ><button id="show-result" class="text-button" hidden>
+            View result</button
           ><span id="board-state">Standard chess</span>
         </div>
 
@@ -98,6 +100,32 @@
               class="board-coordinates"
               aria-hidden="true"
             ></div>
+            <div id="result-overlay" class="result-overlay" hidden>
+              <section
+                class="result-card"
+                role="dialog"
+                aria-modal="false"
+                aria-labelledby="result-title"
+                aria-describedby="result-detail"
+              >
+                <span
+                  id="result-symbol"
+                  class="result-symbol"
+                  aria-hidden="true"
+                  >1–0</span
+                >
+                <h2 id="result-title" tabindex="-1">Game over</h2>
+                <p id="result-detail"></p>
+                <div class="result-actions">
+                  <button id="result-new" class="button primary">
+                    Play again
+                  </button>
+                  <button id="result-review" class="button secondary">
+                    Review board
+                  </button>
+                </div>
+              </section>
+            </div>
           </div>
         </div>
 
