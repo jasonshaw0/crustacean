@@ -57,6 +57,15 @@ let suppressClick = false;
 let droppedMove = null;
 let resultKey = null;
 let resultDismissed = false;
+let boardStamp = "";
+let dragFrame = 0;
+let dropTarget = null;
+let followingMoves = true;
+let historyScrollTop = 0;
+const nodeFormatter = new Intl.NumberFormat("en", {
+  notation: "compact",
+  maximumFractionDigits: 1,
+});
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
 const squares = new Map();
 
@@ -68,7 +77,17 @@ function showPanel(tab) {
     item.tabIndex = active ? 0 : -1;
     $(item.getAttribute("aria-controls")).hidden = !active;
   }
+  if (tab.id === "tab-moves")
+    $("move-list").scrollTop = followingMoves
+      ? $("move-list").scrollHeight
+      : historyScrollTop;
 }
+$("move-list").addEventListener("scroll", () => {
+  const list = $("move-list");
+  if (!list.clientHeight) return;
+  historyScrollTop = list.scrollTop;
+  followingMoves = list.scrollHeight - list.scrollTop - list.clientHeight < 40;
+});
 for (const [index, tab] of detailTabs.entries()) {
   tab.addEventListener("click", () => showPanel(tab));
   tab.addEventListener("keydown", (event) => {
@@ -120,6 +139,7 @@ function canMove() {
 }
 function buildBoard() {
   cancelDrag();
+  boardStamp = "";
   const fragment = document.createDocumentFragment();
   const coordinates = document.createDocumentFragment();
   squares.clear();
@@ -165,6 +185,17 @@ function buildBoard() {
 }
 function renderBoard() {
   if (!game) return;
+  const stamp = [
+    game.fen,
+    game.moves.at(-1)?.uci,
+    selected,
+    focusSquare,
+    flipped,
+    canMove(),
+    drag?.active ? drag.from : "",
+  ].join(":");
+  if (stamp === boardStamp) return;
+  boardStamp = stamp;
   const pieces = placement(game.placement);
   const legal = selected
     ? game.legal_moves.filter((m) => m.startsWith(selected))
@@ -183,6 +214,7 @@ function renderBoard() {
       destinations.has(sq) && piece && "capture",
       game.check_square === sq && "check",
       drag?.active && drag.from === sq && "drag-source",
+      button.classList.contains("moving") && "moving",
     ]
       .filter(Boolean)
       .join(" ");
@@ -313,12 +345,7 @@ function render(incoming) {
     `Last engine evaluation, White perspective: ${score}`,
   );
   $("depth").textContent = a ? String(a.depth) : "—";
-  $("nodes").textContent = a
-    ? new Intl.NumberFormat("en", {
-        notation: "compact",
-        maximumFractionDigits: 1,
-      }).format(a.nodes)
-    : "—";
+  $("nodes").textContent = a ? nodeFormatter.format(a.nodes) : "—";
   $("pv").textContent = a?.pv || "The engine’s line will appear here.";
   renderResult();
 }
@@ -377,6 +404,8 @@ $("show-result").addEventListener("click", () => {
 function renderMoves() {
   const container = $("move-list");
   if (!game.moves.length) {
+    followingMoves = true;
+    historyScrollTop = 0;
     container.innerHTML =
       '<div class="empty-history"><span class="empty-board" aria-hidden="true">◇</span><p>A fresh board. Your first move.</p></div>';
     return;
@@ -406,7 +435,10 @@ function renderMoves() {
     if (index === game.moves.length - 1) cell.className = "latest";
   });
   container.replaceChildren(fragment);
-  container.scrollTop = container.scrollHeight;
+  if (container.clientHeight)
+    container.scrollTop = followingMoves
+      ? container.scrollHeight
+      : historyScrollTop;
 }
 
 function renderFacts() {
@@ -511,12 +543,15 @@ function startDrag(event, from) {
   drag.button.setPointerCapture(event.pointerId);
 }
 function cancelDrag() {
+  cancelAnimationFrame(dragFrame);
+  dragFrame = 0;
+  dropTarget?.classList.remove("drop-target");
+  dropTarget = null;
   if (!drag) return;
   const old = drag;
   drag = null;
   old.ghost?.remove();
   old.button.classList.remove("drag-source");
-  for (const button of squares.values()) button.classList.remove("drop-target");
   if (old.button.hasPointerCapture(old.pointer))
     old.button.releasePointerCapture(old.pointer);
 }
@@ -541,16 +576,23 @@ $("board").addEventListener("pointermove", (event) => {
     drag.ghost.style.width = drag.ghost.style.height = `${size}px`;
     document.body.append(drag.ghost);
   }
-  drag.ghost.style.left = `${event.clientX}px`;
-  drag.ghost.style.top = `${event.clientY - (drag.touch ? 22 : 0)}px`;
-  const target = document
-    .elementFromPoint(event.clientX, event.clientY)
-    ?.closest("[data-square]");
-  for (const button of squares.values())
-    button.classList.toggle(
-      "drop-target",
-      button === target && button.classList.contains("legal"),
-    );
+  drag.clientX = event.clientX;
+  drag.clientY = event.clientY;
+  if (!dragFrame)
+    dragFrame = requestAnimationFrame(() => {
+      dragFrame = 0;
+      if (!drag?.active) return;
+      drag.ghost.style.transform = `translate3d(${drag.clientX}px, ${drag.clientY - (drag.touch ? 22 : 0)}px, 0) translate(-50%, -50%) scale(1.08)`;
+      const target = document
+        .elementFromPoint(drag.clientX, drag.clientY)
+        ?.closest("[data-square]");
+      const next = target?.classList.contains("legal") ? target : null;
+      if (next !== dropTarget) {
+        dropTarget?.classList.remove("drop-target");
+        next?.classList.add("drop-target");
+        dropTarget = next;
+      }
+    });
 });
 $("board").addEventListener("pointerup", (event) => {
   if (!drag || event.pointerId !== drag.pointer) return;
@@ -601,7 +643,7 @@ document.addEventListener("visibilitychange", () => {
 $("board").addEventListener("contextmenu", (event) => event.preventDefault());
 
 async function poll() {
-  if (!transport || polling || busy) return;
+  if (!transport || polling || busy || (document.hidden && game)) return;
   polling = true;
   const ticket = serial;
   try {
@@ -860,7 +902,21 @@ try {
     ? "No account. No install. This tab holds your game; export PGN before closing or reloading."
     : "Your game stays here while the server is running.";
   await poll();
-  if (!browserEngine) setInterval(() => void poll(), 150);
+  if (!browserEngine) {
+    // An idle board doesn't need the same polling rate as an active search.
+    const refresh = async () => {
+      await poll();
+      const active =
+        game?.thinking ||
+        (game?.running &&
+          (game.mode === "engines" || game.side !== game.human));
+      setTimeout(refresh, document.hidden ? 2000 : active ? 150 : 750);
+    };
+    setTimeout(refresh, 750);
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) void poll();
+    });
+  }
 } catch (error) {
   connection(false);
   $("status").textContent = "Engine could not start";
