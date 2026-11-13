@@ -232,10 +232,8 @@ function renderBoard() {
     }
   }
   $("board-hint").textContent = selected
-    ? `Choose a legal square for ${selected}.`
-    : game.mode === "engines"
-      ? "Pause to explore one move at a time."
-      : "Drag a piece, or click a piece and its destination.";
+    ? `Legal moves for ${selected}`
+    : "";
 }
 
 function render(incoming) {
@@ -260,17 +258,7 @@ function render(incoming) {
   renderFacts();
   if ($("status").textContent !== game.status)
     $("status").textContent = game.status;
-  $("game-caption").textContent =
-    game.mode === "engines" ? "ENGINE MATCH" : "YOUR GAME";
-  $("status-detail").textContent = game.finished
-    ? "Start a new game or undo to keep exploring."
-    : !game.running && !game.thinking
-      ? game.mode === "engines" && !game.moves.length
-        ? "Start the engines, or step through a single move."
-        : "Take your time. Resume whenever you’re ready."
-      : game.mode === "engines"
-        ? "Crustacean is playing both sides."
-        : `You’re playing ${game.human}. ${game.side === game.human ? "The board is yours." : "Your opponent is finding a move."}`;
+  $("status-detail").hidden = true;
   $("mode-player").setAttribute("aria-pressed", String(game.mode === "player"));
   $("mode-engines").setAttribute(
     "aria-pressed",
@@ -349,7 +337,7 @@ function render(incoming) {
   );
   $("depth").textContent = a ? String(a.depth) : "—";
   $("nodes").textContent = a ? nodeFormatter.format(a.nodes) : "—";
-  $("pv").textContent = a?.pv || "The engine’s line will appear here.";
+  $("pv").textContent = a?.pv || "—";
   renderResult();
 }
 
@@ -371,12 +359,8 @@ function renderResult() {
   const winner = game.result === "1-0" ? "white" : "black";
   const won = winner === game.human;
   $("result-title").textContent = draw
-    ? "It's a draw"
-    : game.mode === "engines"
-      ? `${title(winner)} wins`
-      : won
-        ? "You won!"
-        : "You lost";
+    ? "Draw"
+    : `${title(winner)} wins`;
   $("result-detail").textContent = game.status + ".";
   $("result-symbol").textContent = draw
     ? "½ – ½"
@@ -410,7 +394,7 @@ function renderMoves() {
     followingMoves = true;
     historyScrollTop = 0;
     container.innerHTML =
-      '<div class="empty-history"><span class="empty-board" aria-hidden="true">◇</span><p>A fresh board. Your first move.</p></div>';
+      '<div class="empty-history"><p>No moves</p></div>';
     return;
   }
   const rows = new Map();
@@ -663,6 +647,7 @@ async function poll() {
         $("status").textContent = "Engine disconnected";
         $("status-detail").textContent =
           "Check that the Crustacean GUI server is running.";
+        $("status-detail").hidden = false;
       }
     }
   } finally {
@@ -921,6 +906,7 @@ try {
   connection(false);
   $("status").textContent = "Engine could not start";
   $("status-detail").textContent = error.message;
+  $("status-detail").hidden = false;
   $("new-game").disabled = true;
   message(error.message, true);
 }

@@ -537,12 +537,6 @@ svg {
 .game-status {
   padding: 25px 2px 22px;
 }
-.eyebrow {
-  font-size: 10px;
-  font-weight: 650;
-  letter-spacing: 1.8px;
-  color: var(--muted);
-}
 h1 {
   font-family: "Segoe UI", system-ui, sans-serif;
   font-size: 28px;
@@ -619,12 +613,6 @@ h1 {
   gap: 11px;
   color: #6e6258;
   font-size: 11px;
-}
-.empty-board {
-  font-size: 40px;
-  font-family: Georgia, serif;
-  line-height: 1;
-  color: #ac9684;
 }
 .moves-footer {
   padding: 12px 20px;
@@ -840,13 +828,6 @@ legend {
   font-size: 12px;
   font-weight: 550;
 }
-.choice small {
-  display: block;
-  font-size: 10px;
-  color: var(--muted);
-  line-height: 1.5;
-  margin-top: 5px;
-}
 .time-settings {
   display: flex;
   gap: 13px;
@@ -1026,9 +1007,6 @@ select {
   .choice {
     padding: 10px;
     gap: 7px;
-  }
-  .choice small {
-    font-size: 9px;
   }
   dialog {
     padding: 22px;
@@ -1346,9 +1324,6 @@ dialog[open] {
   .empty-history {
     min-height: 60px;
     gap: 5px;
-  }
-  .empty-board {
-    font-size: 25px;
   }
 }
 

@@ -59,7 +59,7 @@
     <main class="workspace">
       <section class="play-area" aria-label="Game board">
         <div class="live-strip" aria-live="polite">
-          <span id="board-status">Getting ready…</span
+          <span id="board-status">Loading…</span
           ><button id="show-result" class="text-button" hidden>
             View result</button
           ><span id="board-state">Standard chess</span>
@@ -118,7 +118,7 @@
                 <p id="result-detail"></p>
                 <div class="result-actions">
                   <button id="result-new" class="button primary">
-                    Play again
+                    New game
                   </button>
                   <button id="result-review" class="button secondary">
                     Review board
@@ -166,9 +166,7 @@
             </button>
           </div>
 
-          <span class="board-hint" id="board-hint"
-            >Drag a piece, or click a piece and its destination.</span
-          >
+          <span class="board-hint" id="board-hint"></span>
         </div>
       </section>
 
@@ -183,11 +181,9 @@
           </div>
 
           <div class="game-status">
-            <span class="eyebrow" id="game-caption">YOUR GAME</span>
-
             <h1 id="status" aria-live="polite">Connecting…</h1>
 
-            <p id="status-detail">Getting the board ready.</p>
+            <p id="status-detail" hidden></p>
           </div>
 
           <dl class="game-facts">
@@ -269,9 +265,7 @@
               aria-live="off"
             >
               <div class="empty-history">
-                <span class="empty-board" aria-hidden="true">◇</span>
-
-                <p>A fresh board. Your first move.</p>
+                <p>No moves</p>
               </div>
             </div>
 
@@ -292,7 +286,7 @@
             hidden
           >
             <h2 class="panel-heading">
-              Engine insights
+              Search
 
               <span class="subtle" id="analysis-label">Last search</span>
             </h2>
@@ -311,7 +305,7 @@
               <div class="variation">
                 <span>Principal variation</span>
 
-                <p id="pv">The engine’s line will appear here.</p>
+                <p id="pv">—</p>
               </div>
             </div>
           </section>
@@ -350,7 +344,6 @@
             </div>
           </section>
         </div>
-
       </aside>
     </main>
 
@@ -360,9 +353,7 @@
       <form id="new-form">
         <div class="dialog-heading">
           <div>
-            <span class="eyebrow">FRESH SHELL, FRESH GAME</span>
-
-            <h2 id="new-title">Set up your game</h2>
+            <h2 id="new-title">New game</h2>
           </div>
 
           <button
@@ -381,13 +372,11 @@
           <div class="choice-row">
             <label class="choice"
               ><input type="radio" name="mode" value="player" checked /><span
-                ><strong>Player vs engine</strong
-                ><small>Take a seat against Crustacean.</small></span
+                ><strong>Player vs engine</strong></span
               ></label
             ><label class="choice"
               ><input type="radio" name="mode" value="engines" /><span
-                ><strong>Engine vs engine</strong
-                ><small>Watch, pause, and explore.</small></span
+                ><strong>Engine vs engine</strong></span
               ></label
             >
           </div>
@@ -399,19 +388,18 @@
           <div class="choice-row colors">
             <label class="choice"
               ><input type="radio" name="human" value="white" checked /><span
-                ><strong>White</strong
-                ><small>You make the first move.</small></span
+                ><strong>White</strong></span
               ></label
             ><label class="choice"
               ><input type="radio" name="human" value="black" /><span
-                ><strong>Black</strong><small>The engine opens.</small></span
+                ><strong>Black</strong></span
               ></label
             >
           </div>
         </fieldset>
 
         <fieldset>
-          <legend>Engine thinking time</legend>
+          <legend>Time per move</legend>
 
           <div class="time-settings">
             <label
@@ -444,10 +432,6 @@
               </select></label
             >
           </div>
-
-          <p class="field-note">
-            Per engine move. More time allows a deeper search.
-          </p>
         </fieldset>
 
         <p id="replace-note" class="field-note" hidden>
@@ -465,18 +449,13 @@
     </dialog>
 
     <dialog id="promotion-dialog" aria-labelledby="promotion-title">
-      <h2 id="promotion-title">Promote your pawn</h2>
-
-      <p class="muted">Choose the piece to continue.</p>
+      <h2 id="promotion-title">Promotion</h2>
 
       <div id="promotion-choices" class="promotion-choices"></div>
 
       <button id="cancel-promotion" class="button secondary">Cancel</button>
     </dialog>
 
-    <noscript
-      >This chess board needs JavaScript enabled. You can also use the engine’s
-      terminal interface.</noscript
-    >
+    <noscript>This demo requires JavaScript.</noscript>
   </body>
 </html>
