@@ -58,6 +58,31 @@ let droppedMove = null;
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
 const squares = new Map();
 
+const detailTabs = [...document.querySelectorAll('[role="tab"]')];
+function showPanel(tab) {
+  for (const item of detailTabs) {
+    const active = item === tab;
+    item.setAttribute("aria-selected", String(active));
+    item.tabIndex = active ? 0 : -1;
+    $(item.getAttribute("aria-controls")).hidden = !active;
+  }
+}
+for (const [index, tab] of detailTabs.entries()) {
+  tab.addEventListener("click", () => showPanel(tab));
+  tab.addEventListener("keydown", (event) => {
+    const next = {
+      ArrowRight: (index + 1) % detailTabs.length,
+      ArrowLeft: (index + detailTabs.length - 1) % detailTabs.length,
+      Home: 0,
+      End: detailTabs.length - 1,
+    }[event.key];
+    if (next === undefined) return;
+    event.preventDefault();
+    showPanel(detailTabs[next]);
+    detailTabs[next].focus();
+  });
+}
+
 function message(text, error = false) {
   clearTimeout(toastTimer);
   $("message").textContent = text;

@@ -167,91 +167,141 @@
           </div>
         </section>
 
-        <section class="card moves-card" aria-labelledby="moves-title">
-          <div class="card-heading">
-            <h2 id="moves-title">Move history</h2>
-
-            <span id="move-count" class="muted">0 moves</span>
-          </div>
-
-          <div class="move-columns" aria-hidden="true">
-            <span>NO.</span><span>WHITE</span><span>BLACK</span>
-          </div>
-
-          <div
-            id="move-list"
-            class="move-list"
-            role="log"
-            aria-label="Move history"
-            aria-live="off"
-          >
-            <div class="empty-history">
-              <span class="empty-board" aria-hidden="true">◇</span>
-
-              <p>A fresh board. Your first move.</p>
-            </div>
-          </div>
-
-          <div class="moves-footer">
-            <span id="result-caption">Standard chess</span
-            ><button id="export" class="text-button" disabled>
-              Export PGN <span aria-hidden="true">↗</span>
+        <div class="panel-stack">
+          <div class="panel-tabs" role="tablist" aria-label="Game details">
+            <button
+              id="tab-moves"
+              role="tab"
+              aria-selected="true"
+              aria-controls="panel-moves"
+            >
+              Moves
+            </button>
+            <button
+              id="tab-analysis"
+              role="tab"
+              aria-selected="false"
+              aria-controls="panel-analysis"
+              tabindex="-1"
+            >
+              Analysis
+            </button>
+            <button
+              id="tab-position"
+              role="tab"
+              aria-selected="false"
+              aria-controls="panel-position"
+              tabindex="-1"
+            >
+              Position
             </button>
           </div>
-        </section>
+          <section
+            id="panel-moves"
+            class="card moves-card"
+            role="tabpanel"
+            aria-labelledby="tab-moves"
+            tabindex="0"
+          >
+            <div class="card-heading">
+              <h2 id="moves-title">Move history</h2>
 
-        <details class="card analysis-card" open>
-          <summary>
-            Engine insights
+              <span id="move-count" class="muted">0 moves</span>
+            </div>
 
-            <span class="subtle" id="analysis-label">Last search</span>
-          </summary>
+            <div class="move-columns" aria-hidden="true">
+              <span>NO.</span><span>WHITE</span><span>BLACK</span>
+            </div>
 
-          <div class="analysis-content">
-            <div class="analysis-numbers">
-              <div>
-                <span>White evaluation</span><strong id="score">—</strong>
+            <div
+              id="move-list"
+              class="move-list"
+              role="log"
+              aria-label="Move history"
+              aria-live="off"
+            >
+              <div class="empty-history">
+                <span class="empty-board" aria-hidden="true">◇</span>
+
+                <p>A fresh board. Your first move.</p>
+              </div>
+            </div>
+
+            <div class="moves-footer">
+              <span id="result-caption">Standard chess</span
+              ><button id="export" class="text-button" disabled>
+                Export PGN <span aria-hidden="true">↗</span>
+              </button>
+            </div>
+          </section>
+
+          <section
+            id="panel-analysis"
+            class="card analysis-card"
+            role="tabpanel"
+            aria-labelledby="tab-analysis"
+            tabindex="0"
+            hidden
+          >
+            <h2 class="panel-heading">
+              Engine insights
+
+              <span class="subtle" id="analysis-label">Last search</span>
+            </h2>
+
+            <div class="analysis-content">
+              <div class="analysis-numbers">
+                <div>
+                  <span>White evaluation</span><strong id="score">—</strong>
+                </div>
+
+                <div><span>Depth</span><strong id="depth">—</strong></div>
+
+                <div><span>Positions</span><strong id="nodes">—</strong></div>
               </div>
 
-              <div><span>Depth</span><strong id="depth">—</strong></div>
+              <div class="variation">
+                <span>Principal variation</span>
 
-              <div><span>Positions</span><strong id="nodes">—</strong></div>
+                <p id="pv">The engine’s line will appear here.</p>
+              </div>
             </div>
+          </section>
 
-            <div class="variation">
-              <span>Principal variation</span>
+          <section
+            id="panel-position"
+            class="card position-card"
+            role="tabpanel"
+            aria-labelledby="tab-position"
+            tabindex="0"
+            hidden
+          >
+            <h2 class="panel-heading">Board position</h2>
 
-              <p id="pv">The engine’s line will appear here.</p>
+            <div class="position-content">
+              <div class="fen-heading">
+                <span>Current FEN</span
+                ><button class="text-button" id="copy-fen">Copy FEN</button>
+              </div>
+
+              <code id="current-fen">—</code>
+
+              <form id="position-form">
+                <label for="fen-input">Load a FEN position</label
+                ><textarea
+                  id="fen-input"
+                  rows="3"
+                  placeholder="Paste a six-field FEN…"
+                  spellcheck="false"
+                  required
+                ></textarea
+                ><button class="button secondary" type="submit">
+                  Load position
+                </button>
+              </form>
             </div>
-          </div>
-        </details>
-
-        <details class="card position-card">
-          <summary>Board position</summary>
-
-          <div class="position-content">
-            <div class="fen-heading">
-              <span>Current FEN</span
-              ><button class="text-button" id="copy-fen">Copy FEN</button>
-            </div>
-
-            <code id="current-fen">—</code>
-
-            <form id="position-form">
-              <label for="fen-input">Load a FEN position</label
-              ><textarea
-                id="fen-input"
-                rows="3"
-                placeholder="Paste a six-field FEN…"
-                spellcheck="false"
-                required
-              ></textarea
-              ><button class="button secondary" type="submit">
-                Load position
-              </button>
-            </form>
-          </div>
-        </details>
+          </section>
+        </div>
 
         <p class="session-note" id="session-note">
           Your game stays here while the server is running.

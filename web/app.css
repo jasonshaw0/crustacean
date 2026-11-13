@@ -442,6 +442,41 @@ svg {
   min-width: 0;
   padding-top: 4px;
 }
+.panel-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+}
+.panel-tabs {
+  display: flex;
+  gap: 4px;
+  flex: none;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.panel-tabs button {
+  flex: 1;
+  padding: 10px;
+  background: transparent;
+  border-radius: 6px;
+  font-size: 12px;
+}
+.panel-tabs button[aria-selected="true"] {
+  background: var(--ink);
+  color: var(--card);
+}
+.panel-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 19px;
+}
+[role="tabpanel"]:focus-visible {
+  outline: 2px solid var(--rust);
+  outline-offset: 2px;
+}
 .card {
   background: var(--card);
   border: 1px solid var(--line);
