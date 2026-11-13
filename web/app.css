@@ -264,9 +264,11 @@ svg {
   writing-mode: vertical-rl;
   font-size: 8px;
   transform: translateX(-50%) rotate(180deg);
-  color: #354636;
+  color: #292c2d;
+  background: #fffdf0;
+  padding: 3px 1px;
   font-weight: 600;
-  mix-blend-mode: multiply;
+  mix-blend-mode: normal;
 }
 .evaluation-track.flipped > div {
   top: 0;
