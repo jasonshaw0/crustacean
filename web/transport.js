@@ -22,9 +22,12 @@ export async function createTransport(onChange, onError) {
         }),
     };
   }
-  const { createEngine } = await import("./wasm.js");
-  const engine = await createEngine();
+  const { createEngine, loadEngineModule } = await import("./wasm.js");
+  const module = await loadEngineModule();
+  const engine = await createEngine(module);
   let worker = null;
+  let searching = false;
+  let searchId = 0;
   let timer;
   let state = engine(0);
   const needsEngine = () =>
@@ -32,23 +35,29 @@ export async function createTransport(onChange, onError) {
     (state.thinking ||
       (state.running &&
         (state.mode === "engines" || state.side !== state.human)));
-  function stop() {
+  function stop(dispose = false) {
     clearTimeout(timer);
-    worker?.terminate();
-    worker = null;
+    searchId++;
+    if (searching || dispose) {
+      worker?.terminate();
+      worker = null;
+    }
+    searching = false;
   }
   function schedule() {
     if (!needsEngine()) return;
     state = { ...state, thinking: true };
     const version = state.version;
+    const id = ++searchId;
     timer = setTimeout(() => {
-      worker = new Worker(new URL("./engine-worker.js", import.meta.url), {
+      worker ||= new Worker(new URL("./engine-worker.js", import.meta.url), {
         type: "module",
       });
+      searching = true;
       const current = worker;
       const fail = (error) => {
-        if (worker !== current) return;
-        stop();
+        if (worker !== current || id !== searchId) return;
+        stop(true);
         state = engine(1, "action=pause");
         onChange(state);
         onError(error);
@@ -56,24 +65,37 @@ export async function createTransport(onChange, onError) {
       worker.onerror = () =>
         fail(new Error("Engine stopped. Resume the game to try again."));
       worker.onmessage = ({ data }) => {
-        if (worker !== current || state.version !== version) return;
+        if (
+          worker !== current ||
+          state.version !== version ||
+          data.id !== id ||
+          id !== searchId
+        )
+          return;
         if (data.error) return fail(new Error(data.error));
         try {
           state = engine(
             4,
             new URLSearchParams({ ...data.result, version }).toString(),
           );
-          stop();
+          searching = false;
           schedule();
           onChange(state);
         } catch (error) {
           fail(error);
         }
       };
-      worker.postMessage(engine(2, "", false));
+      worker.postMessage({ id, module, snapshot: engine(2, "", false) });
     }, 220);
   }
-  window.addEventListener("pagehide", stop);
+  window.addEventListener("pagehide", () => {
+    stop(true);
+    state = engine(1, "action=pause");
+  });
+  // Back/forward cache restores the JS heap too; expose the cancelled state on return.
+  window.addEventListener("pageshow", (event) => {
+    if (event.persisted) onChange(state);
+  });
   return {
     state: async () => state,
     action: async (name, fields) => {

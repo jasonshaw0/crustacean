@@ -25,7 +25,7 @@ jobs:
       - run: cargo clippy --lib --target wasm32-unknown-unknown -- -D warnings
       - run: cargo test --release --locked
       - run: node scripts/build-web.mjs
-      - run: node --test tests/wasm.mjs
+      - run: node --test tests/*.mjs
       - uses: actions/upload-pages-artifact@v4
         with:
           path: dist

@@ -1,9 +1,20 @@
-export async function createEngine() {
-  const response = await fetch(new URL("./crustacean.wasm", import.meta.url));
-  if (!response.ok)
-    throw new Error("The engine could not be downloaded. Please reload.");
-  const { instance } = await WebAssembly.instantiate(
-    await response.arrayBuffer(),
+let compiledModule;
+export function loadEngineModule() {
+  compiledModule ||= (async () => {
+    const response = await fetch(new URL("./crustacean.wasm", import.meta.url));
+    if (!response.ok)
+      throw new Error("The engine could not be downloaded. Please reload.");
+    return WebAssembly.compile(await response.arrayBuffer());
+  })().catch((error) => {
+    compiledModule = null;
+    throw error;
+  });
+  return compiledModule;
+}
+
+export async function createEngine(module) {
+  const instance = await WebAssembly.instantiate(
+    module || (await loadEngineModule()),
     {
       env: { now_ms: () => performance.now() },
     },
