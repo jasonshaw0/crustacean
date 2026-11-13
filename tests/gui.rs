@@ -136,6 +136,7 @@ fn embedded_assets_and_initial_state_are_served() {
         "/app.css",
         "/app.js",
         "/transport.js",
+        "/sound.js",
         "/runtime.js",
         "/favicon.svg",
     ] {
